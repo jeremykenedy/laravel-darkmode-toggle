@@ -22,13 +22,13 @@ class InstallCommand extends Command
 
         $this->info("Installing dark mode toggle with {$css} + {$frontend}...");
 
-        if (! $this->option('no-config')) {
+        if (!$this->option('no-config')) {
             $this->call('vendor:publish', ['--tag' => 'darkmode-config']);
         }
 
         $this->call('vendor:publish', ['--tag' => 'darkmode-views', '--force' => true]);
 
-        if (! in_array($frontend, ['blade', 'livewire'])) {
+        if (!in_array($frontend, ['blade', 'livewire'])) {
             $tag = 'darkmode-'.$frontend;
             $this->call('vendor:publish', ['--tag' => $tag, '--force' => true]);
             $this->info("Published {$frontend} components.");

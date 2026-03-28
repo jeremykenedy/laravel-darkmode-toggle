@@ -16,7 +16,7 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
         $css = config('darkmode.css_framework') ?? config('ui-kit.css_framework', 'tailwind');
         $viewPath = __DIR__.'/../resources/views/'.$css.'/blade';
 
-        if (! is_dir($viewPath)) {
+        if (!is_dir($viewPath)) {
             $viewPath = __DIR__.'/../resources/views/tailwind/blade';
         }
 
@@ -54,7 +54,7 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
         ], 'darkmode-views');
 
         $frontend = config('ui-kit.frontend', 'blade');
-        if (! in_array($frontend, ['blade', 'livewire'])) {
+        if (!in_array($frontend, ['blade', 'livewire'])) {
             $jsPath = __DIR__.'/../resources/js/'.$frontend;
             if (is_dir($jsPath)) {
                 $this->publishes([

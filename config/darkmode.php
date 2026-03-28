@@ -94,8 +94,8 @@ return [
     */
 
     'routes' => [
-        'enabled' => true,
-        'prefix' => 'darkmode',
+        'enabled'    => true,
+        'prefix'     => 'darkmode',
         'middleware' => ['web', 'auth'],
     ],
 
