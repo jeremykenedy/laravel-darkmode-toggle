@@ -1,0 +1,23 @@
+{
+    "name": "jeremykenedy/laravel-darkmode-toggle",
+    "description": "A standalone dark mode toggle component for Laravel with multi-framework support (Tailwind, Bootstrap 5, Bootstrap 4) and multiple frontend options (Blade, Livewire, Vue, React, Svelte).",
+    "license": "MIT",
+    "type": "package",
+    "keywords": ["laravel", "dark-mode", "theme", "toggle", "tailwind", "bootstrap", "livewire", "vue", "react", "svelte"],
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^12.0|^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jeremykenedy\\LaravelDarkmodeToggle\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jeremykenedy\\LaravelDarkmodeToggle\\Providers\\DarkmodeToggleServiceProvider"
+            ]
+        }
+    }
+}
