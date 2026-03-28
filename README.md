@@ -2,6 +2,11 @@
 
 A standalone, framework-agnostic dark mode toggle component for Laravel. Supports Tailwind CSS, Bootstrap 5, and Bootstrap 4, with Blade, Livewire, Vue, React, and Svelte frontend options.
 
+[![Total Downloads](https://poser.pugx.org/jeremykenedy/laravel-darkmode-toggle/d/total.svg)](https://packagist.org/packages/jeremykenedy/laravel-darkmode-toggle)
+[![Latest Stable Version](https://poser.pugx.org/jeremykenedy/laravel-darkmode-toggle/v/stable.svg)](https://packagist.org/packages/jeremykenedy/laravel-darkmode-toggle)
+[![StyleCI](https://github.styleci.io/repos/1194798386/shield?branch=main)](https://github.styleci.io/repos/1194798386?branch=main)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 #### Table of Contents
 - [Features](#features)
 - [Installation](#installation)
