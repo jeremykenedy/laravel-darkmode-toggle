@@ -179,6 +179,7 @@ it('darkmode:install command runs with valid options', function () {
     $this->artisan('darkmode:install', [
         '--css'            => 'tailwind',
         '--frontend'       => 'blade',
+        '--force'          => true,
         '--no-interaction' => true,
     ])->assertSuccessful();
 });
@@ -187,6 +188,7 @@ it('darkmode:install command fails with invalid css', function () {
     $this->artisan('darkmode:install', [
         '--css'            => 'invalid',
         '--frontend'       => 'blade',
+        '--force'          => true,
         '--no-interaction' => true,
     ])->assertFailed();
 });
@@ -195,6 +197,7 @@ it('darkmode:install command fails with invalid frontend', function () {
     $this->artisan('darkmode:install', [
         '--css'            => 'tailwind',
         '--frontend'       => 'invalid',
+        '--force'          => true,
         '--no-interaction' => true,
     ])->assertFailed();
 });
@@ -209,6 +212,7 @@ foreach ($cssFrameworks as $css) {
             $this->artisan('darkmode:install', [
                 '--css'            => $css,
                 '--frontend'       => $frontend,
+                '--force'          => true,
                 '--no-interaction' => true,
             ])->assertSuccessful();
         });
@@ -275,3 +279,73 @@ foreach ($cssFrameworks as $css) {
         });
     }
 }
+
+// ─── Update Command Tests ──────────────────────────────────────
+
+it('darkmode:update runs with valid css option', function () {
+    $this->artisan('darkmode:update', [
+        '--css' => 'bootstrap5',
+    ])->assertSuccessful();
+});
+
+it('darkmode:update runs with valid frontend option', function () {
+    $this->artisan('darkmode:update', [
+        '--frontend' => 'livewire',
+    ])->assertSuccessful();
+});
+
+it('darkmode:update runs with both options', function () {
+    $this->artisan('darkmode:update', [
+        '--css'      => 'tailwind',
+        '--frontend' => 'vue',
+    ])->assertSuccessful();
+});
+
+it('darkmode:update fails with invalid css', function () {
+    $this->artisan('darkmode:update', [
+        '--css' => 'material',
+    ])->assertFailed();
+});
+
+it('darkmode:update fails with invalid frontend', function () {
+    $this->artisan('darkmode:update', [
+        '--frontend' => 'angular',
+    ])->assertFailed();
+});
+
+// All CSS update combinations
+foreach ($cssFrameworks as $css) {
+    it("darkmode:update works with --css={$css}", function () use ($css) {
+        $this->artisan('darkmode:update', ['--css' => $css])->assertSuccessful();
+    });
+}
+
+// All frontend update combinations
+foreach ($frontendFrameworks as $frontend) {
+    it("darkmode:update works with --frontend={$frontend}", function () use ($frontend) {
+        $this->artisan('darkmode:update', ['--frontend' => $frontend])->assertSuccessful();
+    });
+}
+
+// All 15 update combinations
+foreach ($cssFrameworks as $css) {
+    foreach ($frontendFrameworks as $frontend) {
+        it("darkmode:update works with {$css} + {$frontend}", function () use ($css, $frontend) {
+            $this->artisan('darkmode:update', [
+                '--css'      => $css,
+                '--frontend' => $frontend,
+            ])->assertSuccessful();
+        });
+    }
+}
+
+// ─── Install Already-Installed Detection Tests ─────────────────
+
+it('darkmode:install with --force skips confirmation when already installed', function () {
+    $this->artisan('darkmode:install', [
+        '--css'            => 'tailwind',
+        '--frontend'       => 'blade',
+        '--force'          => true,
+        '--no-interaction' => true,
+    ])->assertSuccessful();
+});

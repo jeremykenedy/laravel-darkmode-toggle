@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Jeremykenedy\LaravelDarkmodeToggle\Components\Toggle;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\InstallCommand;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\SwitchCommand;
+use Jeremykenedy\LaravelDarkmodeToggle\Console\UpdateCommand;
 use Jeremykenedy\LaravelDarkmodeToggle\Livewire\DarkmodeToggle;
 use Livewire\Livewire;
 
@@ -73,6 +74,7 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
+                UpdateCommand::class,
                 SwitchCommand::class,
             ]);
         }

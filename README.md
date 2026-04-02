@@ -18,6 +18,21 @@ A standalone dark mode toggle component for Laravel with Light, Dark, and System
     <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
+## Table of Contents
+
+- [Framework Support](#framework-support)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Configuration](#configuration)
+- [Server-Side Persistence](#server-side-persistence)
+- [Changing Frameworks](#changing-frameworks)
+- [Artisan Commands](#artisan-commands)
+- [How It Works](#how-it-works)
+- [Testing](#testing)
+- [License](#license)
+
 ## Framework Support
 
 Every CSS and frontend combination is fully supported with identical features:
@@ -51,6 +66,8 @@ The interactive installer will prompt you to select your CSS and frontend framew
 ```bash
 php artisan darkmode:install --css=tailwind --frontend=blade
 ```
+
+> **Note:** If the package is already installed, the install command will warn you and recommend using `darkmode:update` instead. You can force a fresh reinstall with `--force`, but this will overwrite your config and published views.
 
 ## Quick Start
 
@@ -150,22 +167,57 @@ The toggle sends a JSON request:
 { "dark_mode": "dark" }
 ```
 
-## Artisan Commands
+## Changing Frameworks
 
-### Install
+After initial installation, use the **update** or **switch** commands to change your CSS or frontend framework without losing your configuration.
+
+### Update (Interactive)
+
+The update command shows the same stepped prompts as the installer, letting you walk through framework selection:
 
 ```bash
-php artisan darkmode:install                              # Interactive
-php artisan darkmode:install --css=tailwind --frontend=blade  # Non-interactive
+php artisan darkmode:update
 ```
 
-### Switch Frameworks
+Or pass options directly:
+
+```bash
+php artisan darkmode:update --css=bootstrap5
+php artisan darkmode:update --frontend=vue
+php artisan darkmode:update --css=tailwind --frontend=livewire
+```
+
+### Switch (Quick)
+
+The switch command is a shorthand for changing one or both frameworks in a single command:
 
 ```bash
 php artisan darkmode:switch --css=bootstrap5
 php artisan darkmode:switch --frontend=livewire
 php artisan darkmode:switch --css=tailwind --frontend=vue
 ```
+
+Both commands update your `.env` file and clear the config/view caches. After switching, run:
+
+```bash
+npm run build
+```
+
+## Artisan Commands
+
+| Command | Description |
+|---------|-------------|
+| `darkmode:install` | Fresh install with interactive prompts. Detects existing installation and warns before overwriting. |
+| `darkmode:update` | Update framework selection with interactive prompts. Safe, does not overwrite config. |
+| `darkmode:switch` | Quick framework switch via flags. `--css` and/or `--frontend` required. |
+
+### Install Options
+
+| Flag | Description |
+|------|-------------|
+| `--css=` | CSS framework: `tailwind`, `bootstrap5`, `bootstrap4` |
+| `--frontend=` | Frontend: `blade`, `livewire`, `vue`, `react`, `svelte` |
+| `--force` | Skip reinstall confirmation when already installed |
 
 ## How It Works
 
