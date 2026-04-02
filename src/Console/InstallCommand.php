@@ -5,46 +5,39 @@ declare(strict_types=1);
 namespace Jeremykenedy\LaravelDarkmodeToggle\Console;
 
 use Illuminate\Console\Command;
+use Jeremykenedy\LaravelDarkmodeToggle\Console\Concerns\HandlesFrameworkSetup;
+use Jeremykenedy\LaravelDarkmodeToggle\Console\Concerns\HasInstallPrompts;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'darkmode:install
-        {--css=tailwind : CSS framework (tailwind, bootstrap5, bootstrap4)}
-        {--frontend=blade : Frontend framework (blade, livewire, vue, react, svelte)}
-        {--no-config : Skip publishing config}';
+    use HandlesFrameworkSetup;
+    use HasInstallPrompts;
 
-    protected $description = 'Install the dark mode toggle package';
+    protected $signature = 'darkmode:install
+        {--css= : CSS framework (tailwind, bootstrap5, bootstrap4)}
+        {--frontend= : Frontend framework (blade, livewire, vue, react, svelte)}';
+
+    protected $description = 'Install and configure the Laravel Dark Mode Toggle package';
 
     public function handle(): int
     {
-        $css = $this->option('css');
-        $frontend = $this->option('frontend');
+        $this->renderBanner('DARKMODE');
 
-        $this->info("Installing dark mode toggle with {$css} + {$frontend}...");
-
-        if (!$this->option('no-config')) {
-            $this->call('vendor:publish', ['--tag' => 'darkmode-config']);
+        $css = $this->promptCssFramework();
+        if ($css === false) {
+            return self::FAILURE;
+        }
+        $frontend = $this->promptFrontendFramework();
+        if ($frontend === false) {
+            return self::FAILURE;
         }
 
-        $this->call('vendor:publish', ['--tag' => 'darkmode-views', '--force' => true]);
+        $this->call('vendor:publish', ['--tag' => 'darkmode-config', '--force' => true]);
 
-        if (!in_array($frontend, ['blade', 'livewire'])) {
-            $tag = 'darkmode-'.$frontend;
-            $this->call('vendor:publish', ['--tag' => $tag, '--force' => true]);
-            $this->info("Published {$frontend} components.");
-        }
+        $this->setCssFramework($css);
+        $this->setFrontendFramework($frontend);
 
-        $this->newLine();
-        $this->info('Dark mode toggle installed.');
-        $this->newLine();
-        $this->line('Usage in Blade:');
-        $this->line('  <x-darkmode-toggle />');
-        $this->newLine();
-        $this->line('Usage in Livewire:');
-        $this->line('  <livewire:darkmode-toggle />');
-        $this->newLine();
-        $this->line('Add this to your <head> to prevent flash of wrong theme:');
-        $this->line('  @include("darkmode::init-script")');
+        $this->showSummary('Laravel Dark Mode Toggle', $css, $frontend);
 
         return self::SUCCESS;
     }

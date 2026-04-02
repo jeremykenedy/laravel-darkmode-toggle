@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200">
+  <defs>
+    <linearGradient id="grad-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="200" rx="16" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+  <!-- Moon icon -->
+  <g transform="translate(40, 60)">
+    <circle cx="40" cy="40" r="35" fill="none" stroke="url(#grad-light)" stroke-width="3"/>
+    <path d="M55 25 A25 25 0 1 0 55 55 A20 20 0 0 1 55 25" fill="url(#grad-light)" opacity="0.8"/>
+    <!-- Stars -->
+    <circle cx="18" cy="18" r="2" fill="#8b5cf6"/>
+    <circle cx="10" cy="35" r="1.5" fill="#a855f7"/>
+    <circle cx="22" cy="8" r="1" fill="#6366f1"/>
+  </g>
+  <!-- Title -->
+  <text x="140" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="700" fill="#1f2937" letter-spacing="-1">Laravel</text>
+  <text x="140" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="700" fill="url(#grad-light)" letter-spacing="-1">Dark Mode Toggle</text>
+  <!-- Tagline -->
+  <text x="140" y="160" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#6b7280">Multi-framework dark mode toggle for Laravel</text>
+  <!-- Toggle preview -->
+  <g transform="translate(640, 70)">
+    <rect x="0" y="0" width="120" height="60" rx="30" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1"/>
+    <circle cx="90" cy="30" r="24" fill="url(#grad-light)"/>
+    <path d="M83 20 A12 12 0 1 0 83 40 A10 10 0 0 1 83 20" fill="white" opacity="0.9"/>
+  </g>
+</svg>

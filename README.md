@@ -1,61 +1,62 @@
-# Laravel Dark Mode Toggle
+<p align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.svg">
+        <source media="(prefers-color-scheme: light)" srcset="art/banner-light.svg">
+        <img src="art/banner-light.svg" alt="Laravel Dark Mode Toggle" width="800">
+    </picture>
+</p>
 
-A standalone, framework-agnostic dark mode toggle component for Laravel. Supports Tailwind CSS, Bootstrap 5, and Bootstrap 4, with Blade, Livewire, Vue, React, and Svelte frontend options.
+<p align="center">
+A standalone dark mode toggle component for Laravel with Light, Dark, and System modes,<br>localStorage persistence, optional server-side sync, and full CSS/frontend framework parity.
+</p>
 
-[![Total Downloads](https://poser.pugx.org/jeremykenedy/laravel-darkmode-toggle/d/total.svg)](https://packagist.org/packages/jeremykenedy/laravel-darkmode-toggle)
-[![Latest Stable Version](https://poser.pugx.org/jeremykenedy/laravel-darkmode-toggle/v/stable.svg)](https://packagist.org/packages/jeremykenedy/laravel-darkmode-toggle)
-[![StyleCI](https://github.styleci.io/repos/1194798386/shield?branch=main)](https://github.styleci.io/repos/1194798386?branch=main)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+    <a href="https://packagist.org/packages/jeremykenedy/laravel-darkmode-toggle"><img src="https://poser.pugx.org/jeremykenedy/laravel-darkmode-toggle/d/total.svg" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/jeremykenedy/laravel-darkmode-toggle"><img src="https://poser.pugx.org/jeremykenedy/laravel-darkmode-toggle/v/stable.svg" alt="Latest Stable Version"></a>
+    <a href="https://github.com/jeremykenedy/laravel-darkmode-toggle/actions"><img src="https://github.com/jeremykenedy/laravel-darkmode-toggle/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+    <a href="https://github.styleci.io/repos/1194798386?branch=main"><img src="https://github.styleci.io/repos/1194798386/shield?branch=main" alt="StyleCI"></a>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
-#### Table of Contents
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Server-Side Persistence](#server-side-persistence)
-- [CSS Framework Switching](#css-framework-switching)
-- [How It Works](#how-it-works)
-- [Requirements](#requirements)
-- [License](#license)
+## Framework Support
 
-## Features
+Every CSS and frontend combination is fully supported with identical features:
 
-- Three modes: Light, Dark, System (follows OS preference)
-- Persists to `localStorage` (instant, no flash)
-- Optional server-side persistence (saves to user profile)
-- Class-based dark mode (`<html class="dark">`)
-- FOUC prevention via init script
-- Multi-framework CSS: Tailwind, Bootstrap 5, Bootstrap 4
-- Multi-framework frontend: Blade/Alpine.js, Livewire 3, Vue 3, React 18, Svelte 4
-- Configurable via `config/darkmode.php`
-- Artisan install command with framework selection
+|                 | Blade + Alpine.js  |     Livewire 3     |       Vue 3        |      React 18      |      Svelte 4      |
+| --------------- | :----------------: | :----------------: | :----------------: | :----------------: | :----------------: |
+| **Tailwind v4** | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| **Bootstrap 5** | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| **Bootstrap 4** | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+**15 combinations. Zero feature gaps.**
+
+## Requirements
+
+- PHP 8.2+
+- Laravel 12 or 13
+- One CSS framework: Tailwind v4, Bootstrap 5, or Bootstrap 4
+- One frontend: Blade + Alpine.js, Livewire 3, Vue 3, React 18, or Svelte 4
 
 ## Installation
 
 ```bash
 composer require jeremykenedy/laravel-darkmode-toggle
+php artisan darkmode:install
 ```
 
-## Quick Start
+The interactive installer will prompt you to select your CSS and frontend frameworks.
+
+### Non-Interactive Install
 
 ```bash
 php artisan darkmode:install --css=tailwind --frontend=blade
 ```
 
-### Options
-
-| Flag | Values | Default |
-|------|--------|---------|
-| `--css` | `tailwind`, `bootstrap5`, `bootstrap4` | `tailwind` |
-| `--frontend` | `blade`, `livewire`, `vue`, `react`, `svelte` | `blade` |
-| `--no-config` | Skip publishing config | - |
-
-## Usage
+## Quick Start
 
 ### 1. Add the init script to `<head>`
 
-This prevents a flash of the wrong theme on page load:
+Prevents flash of wrong theme on page load:
 
 ```html
 <head>
@@ -104,13 +105,15 @@ import DarkmodeToggle from './vendor/darkmode-toggle/DarkmodeToggle.svelte'
 <DarkmodeToggle persistUrl="/darkmode/preference" />
 ```
 
-### 3. Publish frontend components (Vue/React/Svelte only)
+## Features
 
-```bash
-php artisan darkmode:install --frontend=vue
-php artisan darkmode:install --frontend=react
-php artisan darkmode:install --frontend=svelte
-```
+- **Three modes**: Light, Dark, System (follows OS preference)
+- **Instant switching**: Persists to `localStorage`, no page reload
+- **FOUC prevention**: Init script runs synchronously in `<head>` before paint
+- **Server-side sync**: Optionally saves preference to user profile via PUT/POST
+- **Class-based**: Adds/removes `dark` class on `<html>` element
+- **System tracking**: Listens for OS preference changes in real time
+- **Configurable**: Every aspect via `config/darkmode.php` and ENV variables
 
 ## Configuration
 
@@ -120,32 +123,25 @@ php artisan vendor:publish --tag=darkmode-config
 
 Key options in `config/darkmode.php`:
 
-```php
-return [
-    'strategy' => 'class',          // Dark mode strategy
-    'class_name' => 'dark',         // Class added to <html>
-    'default' => 'system',          // Default mode
-    'storage_key' => 'theme',       // localStorage key
-    'persist_to_server' => true,    // Save to DB when authenticated
-    'persist_route' => '/profile/dark-mode',
-    'persist_method' => 'PUT',
-    'persist_field' => 'dark_mode',
-    'css_framework' => null,        // null = inherit from ui-kit config
-    'routes' => [
-        'enabled' => true,
-        'prefix' => 'darkmode',
-        'middleware' => ['web', 'auth'],
-    ],
-];
-```
+| Option | Default | Description |
+|--------|---------|-------------|
+| `strategy` | `class` | Dark mode strategy |
+| `class_name` | `dark` | Class added to `<html>` |
+| `default` | `system` | Default mode (light/dark/system) |
+| `storage_key` | `theme` | localStorage key |
+| `persist_to_server` | `true` | Save to DB when authenticated |
+| `persist_route` | `/profile/dark-mode` | Server persistence endpoint |
+| `persist_method` | `PUT` | HTTP method for persistence |
+| `persist_field` | `dark_mode` | Request/DB field name |
+| `css_framework` | `null` | null = inherit from `ui-kit.css_framework` |
 
 ## Server-Side Persistence
 
-The package includes a route `PUT /darkmode/preference` that saves the preference. To use your own route (e.g., from `laravel-profiles`), set in config:
+The package includes a route `PUT /darkmode/preference` that saves the preference to the user's profile. To use your own route:
 
 ```php
 'persist_route' => '/profile/dark-mode',
-'routes' => ['enabled' => false],   // disable package route
+'routes' => ['enabled' => false],
 ```
 
 The toggle sends a JSON request:
@@ -154,35 +150,35 @@ The toggle sends a JSON request:
 { "dark_mode": "dark" }
 ```
 
-## CSS Framework Switching
+## Artisan Commands
 
-Switch CSS framework at any time:
+### Install
 
 ```bash
-# In .env
-UI_KIT_CSS=bootstrap5
+php artisan darkmode:install                              # Interactive
+php artisan darkmode:install --css=tailwind --frontend=blade  # Non-interactive
 ```
 
-Or set directly in `config/darkmode.php`:
+### Switch Frameworks
 
-```php
-'css_framework' => 'bootstrap5',
+```bash
+php artisan darkmode:switch --css=bootstrap5
+php artisan darkmode:switch --frontend=livewire
+php artisan darkmode:switch --css=tailwind --frontend=vue
 ```
-
-The component automatically renders with the correct framework's classes.
 
 ## How It Works
 
 1. **Init script** runs synchronously in `<head>`, reads `localStorage`, adds `dark` class before paint
-2. **Toggle component** renders sun/moon/monitor icons, dropdown with Light/Dark/System options
+2. **Toggle component** renders sun/moon/monitor icons with dropdown for Light/Dark/System
 3. **On selection**: updates `localStorage`, toggles HTML class, optionally PUTs to server
 4. **System mode**: listens for `prefers-color-scheme` media query changes in real time
 
-## Requirements
+## Testing
 
-- PHP 8.2+
-- Laravel 12 or 13
-- Alpine.js 3 (for Blade views)
+```bash
+./vendor/bin/pest --ci
+```
 
 ## License
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Jeremykenedy\LaravelDarkmodeToggle\Components;
 
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class Toggle extends Component
 {
@@ -43,7 +44,7 @@ class Toggle extends Component
         return $this->defaultMode;
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $prefix = config('darkmode.prefix', 'darkmode');
 
