@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jeremykenedy\LaravelDarkmodeToggle\Components;
 
-use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\Component;
 
 class Toggle extends Component
 {

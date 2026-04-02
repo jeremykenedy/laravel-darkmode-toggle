@@ -5,7 +5,7 @@
 use Jeremykenedy\LaravelDarkmodeToggle\Components\Toggle;
 
 it('toggle component has expected public properties', function () {
-    $component = new Toggle;
+    $component = new Toggle();
 
     expect($component->storageKey)->toBe('theme')
         ->and($component->defaultMode)->toBe('system')
@@ -34,7 +34,7 @@ it('toggle component accepts persist disabled', function () {
 });
 
 it('toggle component userPreference returns default when no auth', function () {
-    $component = new Toggle;
+    $component = new Toggle();
 
     expect($component->userPreference())->toBe('system');
 });
@@ -51,7 +51,7 @@ it('registers darkmode-toggle blade component', function () {
 
 it('renders tailwind toggle view', function () {
     config(['ui-kit.css_framework' => 'tailwind']);
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain('x-data')
@@ -62,7 +62,7 @@ it('renders tailwind toggle view', function () {
 
 it('tailwind view contains light/dark/system options', function () {
     config(['ui-kit.css_framework' => 'tailwind']);
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain("set('light')")
@@ -72,7 +72,7 @@ it('tailwind view contains light/dark/system options', function () {
 
 it('tailwind view has dark mode classes', function () {
     config(['ui-kit.css_framework' => 'tailwind']);
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain('dark:');
@@ -80,7 +80,7 @@ it('tailwind view has dark mode classes', function () {
 
 it('tailwind view has sun/moon/monitor SVG icons', function () {
     config(['ui-kit.css_framework' => 'tailwind']);
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain('<svg')
@@ -105,7 +105,7 @@ it('renders bootstrap5 toggle view', function () {
     $path = realpath(__DIR__.'/../../src/resources/views/bootstrap5/blade');
     $this->app->make('view')->replaceNamespace('darkmode', [$path, realpath(__DIR__.'/../../src/resources/views/')]);
 
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain('dropdown')
@@ -122,7 +122,7 @@ it('bootstrap5 view has theme buttons', function () {
     $path = realpath(__DIR__.'/../../src/resources/views/bootstrap5/blade');
     $this->app->make('view')->replaceNamespace('darkmode', [$path, realpath(__DIR__.'/../../src/resources/views/')]);
 
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain("set('light')")
@@ -139,7 +139,7 @@ it('renders bootstrap4 toggle view', function () {
     $path = realpath(__DIR__.'/../../src/resources/views/bootstrap4/blade');
     $this->app->make('view')->replaceNamespace('darkmode', [$path, realpath(__DIR__.'/../../src/resources/views/')]);
 
-    $component = new Toggle;
+    $component = new Toggle();
     $html = view(config('darkmode.prefix').'::toggle', $component->data())->render();
 
     expect($html)->toContain('dropdown')

@@ -6,9 +6,9 @@ namespace Jeremykenedy\LaravelDarkmodeToggle\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Jeremykenedy\LaravelDarkmodeToggle\Components\Toggle;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\InstallCommand;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\SwitchCommand;
-use Jeremykenedy\LaravelDarkmodeToggle\Components\Toggle;
 use Jeremykenedy\LaravelDarkmodeToggle\Livewire\DarkmodeToggle;
 use Livewire\Livewire;
 
