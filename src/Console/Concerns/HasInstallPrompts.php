@@ -54,7 +54,17 @@ trait HasInstallPrompts
 
         $this->newLine();
 
-        $colors = ['34', '35', '94', '95', '96'];
+        $palettes = [
+            ['34', '35', '94', '95', '96'],   // Blue/Purple/Cyan
+            ['31', '91', '33', '93', '31'],   // Red/Yellow
+            ['32', '92', '36', '96', '32'],   // Green/Cyan
+            ['33', '93', '91', '31', '33'],   // Yellow/Red
+            ['35', '95', '34', '94', '35'],   // Magenta/Blue
+            ['36', '96', '92', '32', '36'],   // Cyan/Green
+            ['91', '93', '92', '96', '94'],   // Bright rainbow
+            ['95', '35', '34', '94', '96'],   // Pink to Cyan
+        ];
+        $colors = $palettes[array_rand($palettes)];
 
         foreach ($lines as $i => $line) {
             $color = $colors[$i % count($colors)];
