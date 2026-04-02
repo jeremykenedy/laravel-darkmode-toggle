@@ -182,4 +182,4 @@ php artisan darkmode:switch --css=tailwind --frontend=vue
 
 ## License
 
-MIT
+This package is open-sourced software licensed under the [MIT license](LICENSE).
