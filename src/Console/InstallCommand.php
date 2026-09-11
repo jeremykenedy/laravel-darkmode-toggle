@@ -55,6 +55,7 @@ class InstallCommand extends Command
         }
 
         $result = $this->promptFrameworks();
+
         if ($result === false) {
             return self::FAILURE;
         }

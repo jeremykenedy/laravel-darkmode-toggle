@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -8,13 +10,41 @@ return [
     |--------------------------------------------------------------------------
     |
     | How dark mode is applied to the HTML element.
-    | Supported: "class" (adds/removes 'dark' class on <html>)
+    | Supported: "class" (adds/removes the class below on <html>)
     |
     */
 
-    'strategy' => 'class',
+    'strategy' => env('DARKMODE_STRATEGY', 'class'),
 
-    'class_name' => 'dark',
+    'class_name' => env('DARKMODE_CLASS', 'dark'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data Attribute
+    |--------------------------------------------------------------------------
+    |
+    | An optional attribute mirrored onto <html> alongside the class, set to
+    | "dark" or "light". Bootstrap 5.3+ drives its own dark mode from
+    | data-bs-theme, so set this to "data-bs-theme" on Bootstrap 5.
+    |
+    | Leave null to only toggle the class.
+    |
+    */
+
+    'data_attribute' => env('DARKMODE_DATA_ATTRIBUTE'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Color Scheme
+    |--------------------------------------------------------------------------
+    |
+    | Mirror the resolved theme onto the CSS color-scheme property so native
+    | form controls, scrollbars and spellcheck underlines match the theme.
+    | Off by default so existing styling is left alone.
+    |
+    */
+
+    'color_scheme' => env('DARKMODE_COLOR_SCHEME', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +56,7 @@ return [
     |
     */
 
-    'default' => 'system',
+    'default' => env('DARKMODE_DEFAULT', 'system'),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,7 +68,19 @@ return [
     |
     */
 
-    'storage_key' => 'theme',
+    'storage_key' => env('DARKMODE_STORAGE_KEY', 'theme'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cross-tab Sync
+    |--------------------------------------------------------------------------
+    |
+    | Keep every open tab in step by listening for storage events, so changing
+    | the theme in one tab updates the others immediately. Off by default.
+    |
+    */
+
+    'sync_across_tabs' => env('DARKMODE_SYNC_TABS', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,13 +92,13 @@ return [
     |
     */
 
-    'persist_to_server' => true,
+    'persist_to_server' => env('DARKMODE_PERSIST', true),
 
-    'persist_route' => '/profile/dark-mode',
+    'persist_route' => env('DARKMODE_PERSIST_ROUTE', '/profile/dark-mode'),
 
-    'persist_method' => 'PUT',
+    'persist_method' => env('DARKMODE_PERSIST_METHOD', 'PUT'),
 
-    'persist_field' => 'dark_mode',
+    'persist_field' => env('DARKMODE_PERSIST_FIELD', 'dark_mode'),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,19 +111,33 @@ return [
     |
     */
 
-    'css_framework' => null,
+    'css_framework' => env('DARKMODE_CSS'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend
+    |--------------------------------------------------------------------------
+    |
+    | Which frontend the application uses for the toggle.
+    | Supported: "blade", "livewire", "vue", "react", "svelte"
+    | Set to null to inherit from config('ui-kit.frontend').
+    |
+    */
+
+    'frontend' => env('DARKMODE_FRONTEND'),
 
     /*
     |--------------------------------------------------------------------------
     | Component Prefix
     |--------------------------------------------------------------------------
     |
-    | The Blade component prefix. With default "darkmode", the component
-    | is rendered as <x-darkmode::toggle />.
+    | The view namespace and component prefix. With the default "darkmode",
+    | views resolve as darkmode::toggle and the Blade component is rendered
+    | as <x-darkmode-toggle />.
     |
     */
 
-    'prefix' => 'darkmode',
+    'prefix' => env('DARKMODE_PREFIX', 'darkmode'),
 
     /*
     |--------------------------------------------------------------------------
@@ -94,8 +150,8 @@ return [
     */
 
     'routes' => [
-        'enabled'    => true,
-        'prefix'     => 'darkmode',
+        'enabled'    => env('DARKMODE_ROUTES_ENABLED', true),
+        'prefix'     => env('DARKMODE_ROUTES_PREFIX', 'darkmode'),
         'middleware' => ['web', 'auth'],
     ],
 

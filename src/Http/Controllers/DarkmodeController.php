@@ -4,28 +4,32 @@ declare(strict_types=1);
 
 namespace Jeremykenedy\LaravelDarkmodeToggle\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Jeremykenedy\LaravelDarkmodeToggle\Enums\Mode;
+use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 
 class DarkmodeController extends Controller
 {
+    /**
+     * @return JsonResponse|RedirectResponse
+     */
     public function update(Request $request)
     {
-        $field = config('darkmode.persist_field', 'dark_mode');
+        $field = DarkMode::persistField();
 
         $request->validate([
-            $field => ['required', 'in:light,dark,system'],
+            $field => ['required', 'in:'.implode(',', Mode::values())],
         ]);
 
-        $user = $request->user();
+        $mode = $request->input($field);
 
-        if ($user && method_exists($user, 'ensureProfile')) {
-            $user->ensureProfile();
-            $user->profile->update([$field => $request->input($field)]);
-        }
+        DarkMode::persistFor($request->user(), $mode, $field);
 
         if ($request->wantsJson()) {
-            return response()->json([$field => $request->input($field)]);
+            return response()->json([$field => $mode]);
         }
 
         return back();

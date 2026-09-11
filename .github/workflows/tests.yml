@@ -2,6 +2,13 @@ name: Tests
 
 on: ['push', 'pull_request']
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -9,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
+        php: ['8.2', '8.3', '8.4', '8.5']
         laravel: ['12.*', '13.*']
         exclude:
           - php: '8.2'
@@ -65,7 +72,52 @@ jobs:
       - name: Pint
         run: ./vendor/bin/pint --test
 
-  js-check:
+  static-analysis:
+    runs-on: ubuntu-latest
+    name: PHPStan
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: |
+          composer config allow-plugins.pestphp/pest-plugin true
+          composer install --prefer-dist --no-interaction
+
+      - name: PHPStan
+        run: ./vendor/bin/phpstan analyse --no-progress
+
+  composer-health:
+    runs-on: ubuntu-latest
+    name: Composer
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-lock
+
+      - name: Audit dependencies
+        run: |
+          composer config allow-plugins.pestphp/pest-plugin true
+          composer update --prefer-dist --no-interaction
+          composer audit
+
+  frontend:
     runs-on: ubuntu-latest
     name: Frontend components
 
@@ -73,29 +125,52 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify Vue component
-        run: test -f src/resources/js/vue/DarkmodeToggle.vue
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-      - name: Verify React component
-        run: test -f src/resources/js/react/DarkmodeToggle.jsx
+      - name: Install compilers outside the repository
+        run: npm install --prefix /tmp/jscheck --no-fund --no-audit @vue/compiler-sfc@3 svelte@4 esbuild@0.25
 
-      - name: Verify Svelte component
-        run: test -f src/resources/js/svelte/DarkmodeToggle.svelte
-
-      - name: Check all props in Vue
+      - name: Compile the Vue and Svelte components
         run: |
-          for prop in defaultMode storageKey persistUrl persistMethod persistField className; do
-            grep -q "$prop" src/resources/js/vue/DarkmodeToggle.vue || (echo "Vue missing: $prop" && exit 1)
-          done
+          cat > /tmp/jscheck/check.mjs <<'SCRIPT'
+          import { readFileSync } from 'node:fs'
+          import { parse, compileScript } from '@vue/compiler-sfc'
+          import { compile } from 'svelte/compiler'
 
-      - name: Check all props in React
-        run: |
-          for prop in defaultMode storageKey persistUrl persistMethod persistField className; do
-            grep -q "$prop" src/resources/js/react/DarkmodeToggle.jsx || (echo "React missing: $prop" && exit 1)
-          done
+          const repo = process.argv[2]
+          let failed = false
 
-      - name: Check all props in Svelte
+          try {
+              const source = readFileSync(`${repo}/src/resources/js/vue/DarkmodeToggle.vue`, 'utf8')
+              const { descriptor, errors } = parse(source, { filename: 'DarkmodeToggle.vue' })
+              if (errors.length) throw errors[0]
+              compileScript(descriptor, { id: 'darkmode' })
+              console.log('vue: ok')
+          } catch (error) {
+              failed = true
+              console.error('vue: FAILED', error.message)
+          }
+
+          try {
+              const source = readFileSync(`${repo}/src/resources/js/svelte/DarkmodeToggle.svelte`, 'utf8')
+              compile(source, { name: 'DarkmodeToggle' })
+              console.log('svelte: ok')
+          } catch (error) {
+              failed = true
+              console.error('svelte: FAILED', error.message)
+          }
+
+          process.exit(failed ? 1 : 0)
+          SCRIPT
+          node /tmp/jscheck/check.mjs "${GITHUB_WORKSPACE}"
+
+      - name: Compile the React component
+        run: /tmp/jscheck/node_modules/.bin/esbuild --loader:.jsx=jsx --outfile=/dev/null src/resources/js/react/DarkmodeToggle.jsx
+
+      - name: Confirm the repository stays free of javascript tooling
         run: |
-          for prop in defaultMode storageKey persistUrl persistMethod persistField className; do
-            grep -q "$prop" src/resources/js/svelte/DarkmodeToggle.svelte || (echo "Svelte missing: $prop" && exit 1)
-          done
+          test ! -f package.json || (echo "package.json must not be committed to this package" && exit 1)
+          test ! -d node_modules || (echo "node_modules must not be committed to this package" && exit 1)
