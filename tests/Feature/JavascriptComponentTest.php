@@ -92,3 +92,10 @@ it('supports cross tab sync with cleanup', function (string $file) {
         ->and($source)->toContain("addEventListener('storage'")
         ->and($source)->toContain("removeEventListener('storage'");
 })->with('javascript components');
+
+it('ignores stored values that are not supported modes', function (string $file) {
+    $source = componentSource($file);
+
+    expect($source)->toContain('modes.includes(value)')
+        ->and($source)->toContain('modes.includes(event.newValue)');
+})->with('javascript components');

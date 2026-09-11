@@ -29,7 +29,9 @@ let query = null
 
 function read() {
     try {
-        return localStorage.getItem(props.storageKey)
+        const value = localStorage.getItem(props.storageKey)
+
+        return modes.includes(value) ? value : null
     } catch (error) {
         return null
     }
@@ -98,7 +100,7 @@ function onSystemChange() {
 }
 
 function onStorage(event) {
-    if (event.key === props.storageKey && event.newValue) {
+    if (event.key === props.storageKey && modes.includes(event.newValue)) {
         current.value = event.newValue
         apply(event.newValue)
     }

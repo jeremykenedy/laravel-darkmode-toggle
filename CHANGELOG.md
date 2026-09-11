@@ -69,6 +69,10 @@ All notable changes to this package are documented here.
 - `sync_across_tabs` did nothing on the Livewire toggle. It only ever worked on the Blade views.
 - The React component checked storage rather than the selected mode when the operating system
   preference changed, so System stopped following the OS when a browser blocked storage.
+- A stored preference outside light, dark and system was trusted on load. The init script
+  treated it as System while the toggle treated it as neither, so the page painted one theme and
+  then switched to another. Every place that reads the stored value now ignores an unsupported
+  one.
 - The init script and the Livewire markup read raw config while the Blade component normalised
   it. An empty `class_name` made both emit `classList.toggle('')`, which throws, and an invalid
   `default` stopped the init script following the operating system. Both now resolve their

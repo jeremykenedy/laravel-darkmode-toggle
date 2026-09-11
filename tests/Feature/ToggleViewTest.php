@@ -192,3 +192,30 @@ it('renders the livewire markup through a custom view prefix', function (string 
     expect($html)->toContain('x-data')
         ->and($html)->toContain('setTheme');
 })->with('css frameworks');
+
+it('ignores a stored value that is not a supported mode', function (string $css) {
+    $html = $this->renderToggleFor($css);
+
+    expect($html)->toContain("['light', 'dark', 'system'].includes(value) ? value : null");
+})->with('css frameworks');
+
+it('ignores a value from another tab that is not a supported mode', function (string $css) {
+    $html = $this->renderToggleFor($css, ['darkmode.sync_across_tabs' => true]);
+
+    expect($html)->toContain("['light', 'dark', 'system'].includes(event.newValue)");
+})->with('css frameworks');
+
+it('keeps the alpine attribute intact rather than closing it early', function (string $css) {
+    $html = $this->renderToggleFor($css, ['darkmode.sync_across_tabs' => true]);
+
+    preg_match('/x-data="([^"]*)"/s', $html, $matches);
+
+    $attribute = $matches[1] ?? '';
+
+    // A double quote anywhere in the value ends the attribute and silently
+    // breaks every Alpine binding after it, so the whole object has to survive.
+    expect($attribute)->toContain('apply(')
+        ->and($attribute)->toContain('move(')
+        ->and($attribute)->toContain("['light', 'dark', 'system']")
+        ->and(substr_count($attribute, '"'))->toBe(0);
+})->with('css frameworks');

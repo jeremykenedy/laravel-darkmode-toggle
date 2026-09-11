@@ -142,3 +142,18 @@ it('normalises settings so it cannot emit an empty class token', function () {
         ->and($html)->not->toContain("classList.toggle(''")
         ->and($html)->toContain("localStorage.setItem('theme'");
 });
+
+it('keeps the alpine attribute intact rather than closing it early', function (string $css) {
+    $this->useCssFramework($css, ['darkmode.sync_across_tabs' => true]);
+
+    $html = Livewire::test(DarkmodeToggle::class)->html();
+
+    preg_match('/x-data="([^"]*)"/s', $html, $matches);
+
+    $attribute = $matches[1] ?? '';
+
+    expect($attribute)->toContain('apply(')
+        ->and($attribute)->toContain('move(')
+        ->and($attribute)->toContain("['light', 'dark', 'system']")
+        ->and(substr_count($attribute, '"'))->toBe(0);
+})->with(['tailwind', 'bootstrap5', 'bootstrap4']);

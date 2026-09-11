@@ -73,6 +73,14 @@ class DarkMode
     /**
      * The configured default mode, falling back when it is not a supported mode.
      */
+    /**
+     * @return array<int, string>
+     */
+    public static function modes(): array
+    {
+        return Mode::values();
+    }
+
     public static function defaultMode(): string
     {
         $default = config('darkmode.default', Mode::System->value);

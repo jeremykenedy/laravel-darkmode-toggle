@@ -6,6 +6,8 @@
     $dataAttribute = $darkmode::dataAttribute();
     $colorScheme = (bool) config('darkmode.color_scheme', false);
     $syncAcrossTabs = (bool) config('darkmode.sync_across_tabs', false);
+    $modes = $darkmode::modes();
+    $modesList = "['".implode("', '", $modes)."']";
 @endphp
 x-data="{
     open: false,
@@ -15,7 +17,7 @@ x-data="{
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.apply(this.mode));
         @if($syncAcrossTabs)
         window.addEventListener('storage', (event) => {
-            if (event.key === '{{ $storageKey }}' && event.newValue) {
+            if (event.key === '{{ $storageKey }}' && {!! $modesList !!}.includes(event.newValue)) {
                 this.apply(event.newValue);
             }
         });

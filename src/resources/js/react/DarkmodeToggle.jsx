@@ -6,7 +6,9 @@ const defaultLabels = { light: 'Light', dark: 'Dark', system: 'System' }
 
 function read(storageKey) {
     try {
-        return localStorage.getItem(storageKey)
+        const value = localStorage.getItem(storageKey)
+
+        return modes.includes(value) ? value : null
     } catch (error) {
         return null
     }
@@ -65,7 +67,7 @@ export default function DarkmodeToggle({
             }
         }
         const onStorage = (event) => {
-            if (event.key === storageKey && event.newValue) {
+            if (event.key === storageKey && modes.includes(event.newValue)) {
                 currentRef.current = event.newValue
                 setCurrent(event.newValue)
                 apply(event.newValue)

@@ -1,4 +1,7 @@
 {{-- Shared Alpine behaviour for the Blade toggle. Only the markup differs per CSS framework. --}}
+@php
+    $modesList = "['".implode("', '", $modes)."']";
+@endphp
 x-data="{
     open: false,
     current: '{{ $userPreference() }}',
@@ -11,7 +14,7 @@ x-data="{
         });
         @if($syncAcrossTabs)
         window.addEventListener('storage', (event) => {
-            if (event.key === '{{ $storageKey }}' && event.newValue) {
+            if (event.key === '{{ $storageKey }}' && {!! $modesList !!}.includes(event.newValue)) {
                 this.current = event.newValue;
                 this.apply();
             }
@@ -20,7 +23,9 @@ x-data="{
     },
     read() {
         try {
-            return localStorage.getItem('{{ $storageKey }}');
+            const value = localStorage.getItem('{{ $storageKey }}');
+
+            return {!! $modesList !!}.includes(value) ? value : null;
         } catch (error) {
             return null;
         }

@@ -80,3 +80,10 @@ it('normalises an emptied storage key', function () {
 
     expect(initScript())->toContain('var key = "theme"');
 });
+
+it('ignores a stored value that is not a supported mode', function () {
+    $html = initScript();
+
+    expect($html)->toContain('var modes = ["light","dark","system"]')
+        ->and($html)->toContain('modes.indexOf(value) === -1 ? null : value');
+});

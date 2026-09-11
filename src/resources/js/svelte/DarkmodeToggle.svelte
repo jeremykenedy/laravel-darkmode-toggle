@@ -23,7 +23,9 @@
 
     function read() {
         try {
-            return localStorage.getItem(storageKey)
+            const value = localStorage.getItem(storageKey)
+
+            return modes.includes(value) ? value : null
         } catch (error) {
             return null
         }
@@ -108,7 +110,7 @@
     }
 
     function onStorage(event) {
-        if (event.key === storageKey && event.newValue) {
+        if (event.key === storageKey && modes.includes(event.newValue)) {
             current = event.newValue
             apply(event.newValue)
         }

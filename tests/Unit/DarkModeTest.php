@@ -161,3 +161,7 @@ it('uses the configured default when it is a supported mode', function (string $
 
     expect(DarkMode::defaultMode())->toBe($mode);
 })->with(['light', 'dark', 'system']);
+
+it('exposes the supported modes for the views to validate against', function () {
+    expect(DarkMode::modes())->toBe(['light', 'dark', 'system']);
+});

@@ -32,6 +32,9 @@ class Toggle extends Component
 
     public bool $colorScheme;
 
+    /** @var array<int, string> */
+    public array $modes;
+
     public function __construct(
         ?string $default = null,
         ?string $persistRoute = null,
@@ -47,6 +50,7 @@ class Toggle extends Component
         $this->dataAttribute = DarkMode::dataAttribute();
         $this->syncAcrossTabs = (bool) config('darkmode.sync_across_tabs', false);
         $this->colorScheme = (bool) config('darkmode.color_scheme', false);
+        $this->modes = DarkMode::modes();
     }
 
     public function userPreference(): string

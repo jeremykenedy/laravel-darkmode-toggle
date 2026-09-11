@@ -6,6 +6,7 @@
     $dataAttribute = $darkmode::dataAttribute();
     $colorScheme = (bool) config('darkmode.color_scheme', false);
     $defaultMode = $darkmode::defaultMode();
+    $modes = $darkmode::modes();
 @endphp
 {{-- Include in <head> with @include('darkmode::init-script'). --}}
 <style>[x-cloak]{display:none !important}</style>
@@ -16,11 +17,14 @@
     var attr = @json($dataAttribute);
     var fallback = @json($defaultMode);
     var colorScheme = @json($colorScheme);
+    var modes = @json($modes);
     var root = document.documentElement;
 
     function stored() {
         try {
-            return window.localStorage.getItem(key);
+            var value = window.localStorage.getItem(key);
+
+            return modes.indexOf(value) === -1 ? null : value;
         } catch (e) {
             return null;
         }
