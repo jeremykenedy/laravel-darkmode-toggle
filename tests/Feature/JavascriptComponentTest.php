@@ -77,3 +77,10 @@ it('supports the keyboard navigation the readme documents', function (string $fi
         ->and($source)->toContain('menuitemradio')
         ->and($source)->toContain('focus()');
 })->with('javascript components');
+
+it('tracks the selected mode in the system change listener rather than re-reading storage', function () {
+    $source = componentSource('react/DarkmodeToggle.jsx');
+
+    expect($source)->toContain('currentRef.current')
+        ->and($source)->toContain("if (currentRef.current === 'system')");
+});

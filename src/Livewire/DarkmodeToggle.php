@@ -27,7 +27,9 @@ class DarkmodeToggle extends Component
 
         $this->current = $mode;
 
-        DarkMode::persistFor(Auth::user(), $mode);
+        if (config('darkmode.persist_to_server', true)) {
+            DarkMode::persistFor(Auth::user(), $mode);
+        }
 
         $this->dispatch('theme-changed', mode: $mode);
     }

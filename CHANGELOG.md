@@ -61,6 +61,14 @@ All notable changes to this package are documented here.
 - A `default` that is not light, dark or system, set in config or passed to the component,
   rendered a toggle where no option was ever marked as the current one. It now falls back to
   system.
+- `darkmode:switch` and `darkmode:update` wrote only `UI_KIT_CSS` and `UI_KIT_FRONTEND`. An
+  application that sets `DARKMODE_CSS` or `DARKMODE_FRONTEND`, which take precedence, saw the
+  command report success while the framework never changed. Those keys are now updated too when
+  the application already sets them.
+- The Livewire toggle ignored `persist_to_server` and always wrote to the profile.
+- `sync_across_tabs` did nothing on the Livewire toggle. It only ever worked on the Blade views.
+- The React component checked storage rather than the selected mode when the operating system
+  preference changed, so System stopped following the OS when a browser blocked storage.
 
 ### Notes
 

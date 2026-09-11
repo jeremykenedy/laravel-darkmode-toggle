@@ -97,3 +97,38 @@ it('ignores a configured default that is not a supported mode', function () {
 
     Livewire::test(DarkmodeToggle::class)->assertSet('current', 'system');
 });
+
+it('does not write to the profile when server persistence is switched off', function () {
+    config(['darkmode.persist_to_server' => false]);
+
+    $user = new User();
+
+    $this->actingAs($user);
+
+    Livewire::test(DarkmodeToggle::class)->call('setTheme', 'dark')->assertSet('current', 'dark');
+
+    expect($user->profile)->toBeNull();
+});
+
+it('still applies the theme in the browser when server persistence is off', function () {
+    config(['darkmode.persist_to_server' => false]);
+
+    $html = Livewire::test(DarkmodeToggle::class)->html();
+
+    expect($html)->toContain('classList.toggle');
+});
+
+it('does not listen for storage events until cross tab sync is switched on', function (string $css) {
+    $this->useCssFramework($css);
+
+    expect(Livewire::test(DarkmodeToggle::class)->html())->not->toContain("addEventListener('storage'");
+})->with(['tailwind', 'bootstrap5', 'bootstrap4']);
+
+it('keeps other tabs in step when cross tab sync is switched on', function (string $css) {
+    $this->useCssFramework($css, ['darkmode.sync_across_tabs' => true]);
+
+    $html = Livewire::test(DarkmodeToggle::class)->html();
+
+    expect($html)->toContain("window.addEventListener('storage'")
+        ->and($html)->toContain("event.key === 'theme'");
+})->with(['tailwind', 'bootstrap5', 'bootstrap4']);

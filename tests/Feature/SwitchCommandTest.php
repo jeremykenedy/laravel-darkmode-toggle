@@ -1,6 +1,7 @@
 <?php
 
 use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
+use Jeremykenedy\LaravelDarkmodeToggle\Console\Concerns\HandlesFrameworkSetup;
 
 it('switches the css framework', function (string $css) {
     $this->artisan('darkmode:switch', ['--css' => $css])
@@ -46,4 +47,14 @@ it('runs without needing the package to be installed first', function () {
     @unlink(config_path('darkmode.php'));
 
     $this->artisan('darkmode:switch', ['--css' => 'tailwind'])->assertSuccessful();
+});
+
+it('keeps the package env keys in step so a switch cannot silently do nothing', function () {
+    $trait = new ReflectionClass(HandlesFrameworkSetup::class);
+
+    $css = $trait->getMethod('setCssFramework')->getFileName();
+    $source = file_get_contents($css);
+
+    expect($source)->toContain("updateEnvValueIfPresent('DARKMODE_CSS'")
+        ->and($source)->toContain("updateEnvValueIfPresent('DARKMODE_FRONTEND'");
 });

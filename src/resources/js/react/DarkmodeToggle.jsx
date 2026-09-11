@@ -29,6 +29,7 @@ export default function DarkmodeToggle({
     const root = useRef(null)
     const trigger = useRef(null)
     const menu = useRef(null)
+    const currentRef = useRef(defaultMode)
 
     const apply = useCallback((mode) => {
         const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -47,12 +48,13 @@ export default function DarkmodeToggle({
     useEffect(() => {
         const stored = read(storageKey) || defaultMode
 
+        currentRef.current = stored
         setCurrent(stored)
         apply(stored)
 
         const query = window.matchMedia('(prefers-color-scheme: dark)')
         const onSystemChange = () => {
-            if ((read(storageKey) || defaultMode) === 'system') {
+            if (currentRef.current === 'system') {
                 apply('system')
             }
         }
@@ -105,6 +107,7 @@ export default function DarkmodeToggle({
     }
 
     function setTheme(mode) {
+        currentRef.current = mode
         setCurrent(mode)
 
         try {

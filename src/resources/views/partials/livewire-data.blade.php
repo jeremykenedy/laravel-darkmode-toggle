@@ -5,6 +5,13 @@ x-data="{
     init() {
         this.apply(this.mode);
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.apply(this.mode));
+        @if(config('darkmode.sync_across_tabs', false))
+        window.addEventListener('storage', (event) => {
+            if (event.key === '{{ config('darkmode.storage_key', 'theme') }}' && event.newValue) {
+                this.apply(event.newValue);
+            }
+        });
+        @endif
     },
     apply(mode) {
         this.mode = mode;

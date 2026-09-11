@@ -74,13 +74,47 @@ trait HandlesFrameworkSetup
     protected function setCssFramework(string $css): void
     {
         $this->updateEnvValue('UI_KIT_CSS', $css);
+        $this->updateEnvValueIfPresent('DARKMODE_CSS', $css);
         $this->clearCaches();
     }
 
     protected function setFrontendFramework(string $frontend): void
     {
         $this->updateEnvValue('UI_KIT_FRONTEND', $frontend);
+        $this->updateEnvValueIfPresent('DARKMODE_FRONTEND', $frontend);
         $this->clearCaches();
+    }
+
+    /**
+     * Update a key only when the application already sets it.
+     *
+     * DARKMODE_CSS and DARKMODE_FRONTEND take precedence over the UI kit keys,
+     * so leaving a stale value behind would make the command report a switch
+     * that never took effect. Applications that do not set them keep a .env
+     * with nothing added to it.
+     */
+    protected function updateEnvValueIfPresent(string $key, string $value): void
+    {
+        if ($this->envKeyExists($key)) {
+            $this->updateEnvValue($key, $value);
+        }
+    }
+
+    protected function envKeyExists(string $key): bool
+    {
+        if (app()->runningUnitTests()) {
+            return false;
+        }
+
+        $path = base_path('.env');
+
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        $content = file_get_contents($path);
+
+        return $content !== false && preg_match("/^{$key}=/m", $content) === 1;
     }
 
     protected function clearCaches(): void
