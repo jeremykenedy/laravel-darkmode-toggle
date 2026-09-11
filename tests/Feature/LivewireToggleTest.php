@@ -91,3 +91,9 @@ it('applies the theme in the browser without waiting for a round trip', function
     expect($html)->toContain('classList.toggle')
         ->and($html)->toContain('theme-changed.window');
 })->with(['tailwind', 'bootstrap5', 'bootstrap4']);
+
+it('ignores a configured default that is not a supported mode', function () {
+    config(['darkmode.default' => 'sepia']);
+
+    Livewire::test(DarkmodeToggle::class)->assertSet('current', 'system');
+});

@@ -149,3 +149,15 @@ it('leaves applications that do not use the profile convention alone', function 
 it('does nothing when there is no authenticated user', function () {
     DarkMode::persistFor(null, 'dark');
 })->throwsNoExceptions();
+
+it('falls back to system when the configured default is not a supported mode', function () {
+    config(['darkmode.default' => 'sepia']);
+
+    expect(DarkMode::defaultMode())->toBe('system');
+});
+
+it('uses the configured default when it is a supported mode', function (string $mode) {
+    config(['darkmode.default' => $mode]);
+
+    expect(DarkMode::defaultMode())->toBe($mode);
+})->with(['light', 'dark', 'system']);

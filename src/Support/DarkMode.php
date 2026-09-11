@@ -70,6 +70,16 @@ class DarkMode
         return self::string('darkmode.persist_field', 'dark_mode');
     }
 
+    /**
+     * The configured default mode, falling back when it is not a supported mode.
+     */
+    public static function defaultMode(): string
+    {
+        $default = config('darkmode.default', Mode::System->value);
+
+        return Mode::isValid($default) ? $default : Mode::System->value;
+    }
+
     public static function dataAttribute(): ?string
     {
         $attribute = config('darkmode.data_attribute');

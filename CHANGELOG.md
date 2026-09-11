@@ -58,6 +58,9 @@ All notable changes to this package are documented here.
 - The controller checks that the profile is an object before updating it.
 - `darkmode:install --css=material --no-interaction` wrote an unsupported framework instead of
   failing. Passing a single flag skipped validation.
+- A `default` that is not light, dark or system, set in config or passed to the component,
+  rendered a toggle where no option was ever marked as the current one. It now falls back to
+  system.
 
 ### Notes
 

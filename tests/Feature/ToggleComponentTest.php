@@ -89,3 +89,24 @@ it('renders through the configured view prefix', function () {
     expect((new Toggle())->render())->toBeInstanceOf(View::class)
         ->and((new Toggle())->render()->name())->toBe('darkmode::toggle');
 });
+
+it('ignores a configured default that is not a supported mode', function () {
+    config(['darkmode.default' => 'sepia']);
+
+    $component = new Toggle();
+
+    expect($component->defaultMode)->toBe('system')
+        ->and($component->userPreference())->toBe('system');
+});
+
+it('ignores a default passed to the component that is not a supported mode', function () {
+    expect((new Toggle(default: 'sepia'))->defaultMode)->toBe('system');
+});
+
+it('renders a toggle where one option is always the checked one', function () {
+    config(['darkmode.default' => 'sepia']);
+
+    $html = $this->renderToggleFor('tailwind');
+
+    expect($html)->toContain("current: 'system'");
+});

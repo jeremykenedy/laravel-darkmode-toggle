@@ -7,6 +7,7 @@ namespace Jeremykenedy\LaravelDarkmodeToggle\Components;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
+use Jeremykenedy\LaravelDarkmodeToggle\Enums\Mode;
 use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 
 class Toggle extends Component
@@ -37,7 +38,7 @@ class Toggle extends Component
         ?bool $persistToServer = null,
     ) {
         $this->storageKey = DarkMode::storageKey();
-        $this->defaultMode = $default ?? config('darkmode.default', 'system');
+        $this->defaultMode = Mode::isValid($default) ? $default : DarkMode::defaultMode();
         $this->persistRoute = $persistRoute ?? config('darkmode.persist_route', '/profile/dark-mode');
         $this->persistMethod = config('darkmode.persist_method', 'PUT');
         $this->persistField = DarkMode::persistField();

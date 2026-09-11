@@ -16,8 +16,7 @@ class DarkmodeToggle extends Component
 
     public function mount(): void
     {
-        $this->current = DarkMode::preferenceFor(Auth::user())
-            ?? config('darkmode.default', 'system');
+        $this->current = DarkMode::preferenceFor(Auth::user()) ?? DarkMode::defaultMode();
     }
 
     public function setTheme(string $mode): void
