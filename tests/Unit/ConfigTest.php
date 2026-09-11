@@ -28,3 +28,30 @@ it('has route configuration', function () {
 it('css_framework defaults to null for ui-kit inheritance', function () {
     expect(config('darkmode.css_framework'))->toBeNull();
 });
+
+it('ships the same defaults the readme documents', function () {
+    $shipped = require __DIR__.'/../../config/darkmode.php';
+
+    expect($shipped['strategy'])->toBe('class')
+        ->and($shipped['class_name'])->toBe('dark')
+        ->and($shipped['default'])->toBe('system')
+        ->and($shipped['storage_key'])->toBe('theme')
+        ->and($shipped['persist_to_server'])->toBeTrue()
+        ->and($shipped['persist_route'])->toBe('/profile/dark-mode')
+        ->and($shipped['persist_method'])->toBe('PUT')
+        ->and($shipped['persist_field'])->toBe('dark_mode')
+        ->and($shipped['prefix'])->toBe('darkmode')
+        ->and($shipped['css_framework'])->toBeNull()
+        ->and($shipped['frontend'])->toBeNull()
+        ->and($shipped['routes']['enabled'])->toBeTrue()
+        ->and($shipped['routes']['prefix'])->toBe('darkmode')
+        ->and($shipped['routes']['middleware'])->toBe(['web', 'auth']);
+});
+
+it('ships the additive settings switched off so existing installs are unchanged', function () {
+    $shipped = require __DIR__.'/../../config/darkmode.php';
+
+    expect($shipped['data_attribute'])->toBeNull()
+        ->and($shipped['color_scheme'])->toBeFalse()
+        ->and($shipped['sync_across_tabs'])->toBeFalse();
+});

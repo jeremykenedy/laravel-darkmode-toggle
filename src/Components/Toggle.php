@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Jeremykenedy\LaravelDarkmodeToggle\Components;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
+use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 
 class Toggle extends Component
 {
@@ -21,33 +23,38 @@ class Toggle extends Component
 
     public bool $persistToServer;
 
+    public string $className;
+
+    public ?string $dataAttribute;
+
+    public bool $syncAcrossTabs;
+
+    public bool $colorScheme;
+
     public function __construct(
         ?string $default = null,
         ?string $persistRoute = null,
         ?bool $persistToServer = null,
     ) {
-        $this->storageKey = config('darkmode.storage_key', 'theme');
+        $this->storageKey = DarkMode::storageKey();
         $this->defaultMode = $default ?? config('darkmode.default', 'system');
         $this->persistRoute = $persistRoute ?? config('darkmode.persist_route', '/profile/dark-mode');
         $this->persistMethod = config('darkmode.persist_method', 'PUT');
-        $this->persistField = config('darkmode.persist_field', 'dark_mode');
+        $this->persistField = DarkMode::persistField();
         $this->persistToServer = $persistToServer ?? config('darkmode.persist_to_server', true);
+        $this->className = DarkMode::className();
+        $this->dataAttribute = DarkMode::dataAttribute();
+        $this->syncAcrossTabs = (bool) config('darkmode.sync_across_tabs', false);
+        $this->colorScheme = (bool) config('darkmode.color_scheme', false);
     }
 
     public function userPreference(): string
     {
-        $user = auth()->user();
-        if ($user && $user->profile) {
-            return $user->profile->dark_mode ?? $this->defaultMode;
-        }
-
-        return $this->defaultMode;
+        return DarkMode::preferenceFor(Auth::user(), $this->persistField) ?? $this->defaultMode;
     }
 
     public function render(): View
     {
-        $prefix = config('darkmode.prefix', 'darkmode');
-
-        return view($prefix.'::toggle');
+        return view(DarkMode::prefix().'::toggle');
     }
 }

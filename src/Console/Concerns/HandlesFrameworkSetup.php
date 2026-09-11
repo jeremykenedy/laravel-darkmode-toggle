@@ -4,16 +4,44 @@ declare(strict_types=1);
 
 namespace Jeremykenedy\LaravelDarkmodeToggle\Console\Concerns;
 
+use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
+
 trait HandlesFrameworkSetup
 {
     protected function getCssOption(): string
     {
-        return $this->option('css') ?? config('ui-kit.css_framework', 'tailwind');
+        $css = $this->option('css');
+
+        return is_string($css) && $css !== '' ? $css : DarkMode::cssFramework();
     }
 
     protected function getFrontendOption(): string
     {
-        return $this->option('frontend') ?? config('ui-kit.frontend', 'blade');
+        $frontend = $this->option('frontend');
+
+        return is_string($frontend) && $frontend !== '' ? $frontend : DarkMode::frontend();
+    }
+
+    protected function validateCssFramework(string $css): bool
+    {
+        if (DarkMode::isValidCssFramework($css)) {
+            return true;
+        }
+
+        $this->error("Invalid CSS framework: {$css}. Valid: ".implode(', ', DarkMode::CSS_FRAMEWORKS));
+
+        return false;
+    }
+
+    protected function validateFrontend(string $frontend): bool
+    {
+        if (DarkMode::isValidFrontend($frontend)) {
+            return true;
+        }
+
+        $this->error("Invalid frontend: {$frontend}. Valid: ".implode(', ', DarkMode::FRONTENDS));
+
+        return false;
     }
 
     protected function updateEnvValue(string $key, string $value): void
@@ -30,10 +58,14 @@ trait HandlesFrameworkSetup
 
         $content = file_get_contents($path);
 
-        if (str_contains($content, "{$key}=")) {
-            $content = preg_replace("/^{$key}=.*/m", "{$key}={$value}", $content);
+        if ($content === false) {
+            return;
+        }
+
+        if (preg_match("/^{$key}=/m", $content) === 1) {
+            $content = (string) preg_replace("/^{$key}=.*/m", "{$key}={$value}", $content);
         } else {
-            $content .= "\n{$key}={$value}";
+            $content = rtrim($content, "\n")."\n{$key}={$value}\n";
         }
 
         file_put_contents($path, $content);
@@ -42,14 +74,18 @@ trait HandlesFrameworkSetup
     protected function setCssFramework(string $css): void
     {
         $this->updateEnvValue('UI_KIT_CSS', $css);
-        $this->call('config:clear');
-        $this->call('view:clear');
+        $this->clearCaches();
     }
 
     protected function setFrontendFramework(string $frontend): void
     {
         $this->updateEnvValue('UI_KIT_FRONTEND', $frontend);
-        $this->call('config:clear');
-        $this->call('view:clear');
+        $this->clearCaches();
+    }
+
+    protected function clearCaches(): void
+    {
+        $this->callSilently('config:clear');
+        $this->callSilently('view:clear');
     }
 }

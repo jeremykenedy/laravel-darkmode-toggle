@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Jeremykenedy\LaravelDarkmodeToggle\Livewire;
 
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
+use Jeremykenedy\LaravelDarkmodeToggle\Enums\Mode;
+use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 use Livewire\Component;
 
 class DarkmodeToggle extends Component
@@ -12,36 +16,28 @@ class DarkmodeToggle extends Component
 
     public function mount(): void
     {
-        $user = auth()->user();
-        $field = config('darkmode.persist_field', 'dark_mode');
-
-        if ($user && $user->profile) {
-            $this->current = $user->profile->{$field} ?? config('darkmode.default', 'system');
-        }
+        $this->current = DarkMode::preferenceFor(Auth::user())
+            ?? config('darkmode.default', 'system');
     }
 
     public function setTheme(string $mode): void
     {
-        if (!in_array($mode, ['light', 'dark', 'system'])) {
+        if (!Mode::isValid($mode)) {
             return;
         }
 
         $this->current = $mode;
-        $field = config('darkmode.persist_field', 'dark_mode');
 
-        $user = auth()->user();
-        if ($user && method_exists($user, 'ensureProfile')) {
-            $user->ensureProfile();
-            $user->profile->update([$field => $mode]);
-        }
+        DarkMode::persistFor(Auth::user(), $mode);
 
         $this->dispatch('theme-changed', mode: $mode);
     }
 
+    /**
+     * @return View
+     */
     public function render()
     {
-        $prefix = config('darkmode.prefix', 'darkmode');
-
-        return view($prefix.'::livewire.toggle');
+        return view(DarkMode::prefix().'::livewire.toggle');
     }
 }

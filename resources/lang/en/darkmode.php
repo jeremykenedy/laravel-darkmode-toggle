@@ -5,4 +5,6 @@ return [
     'dark'         => 'Dark',
     'system'       => 'System',
     'toggle_theme' => 'Toggle theme',
+    'appearance'   => 'Appearance',
+    'select_theme' => 'Select a theme',
 ];

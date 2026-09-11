@@ -11,6 +11,7 @@ use Jeremykenedy\LaravelDarkmodeToggle\Console\InstallCommand;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\SwitchCommand;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\UpdateCommand;
 use Jeremykenedy\LaravelDarkmodeToggle\Livewire\DarkmodeToggle;
+use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 use Livewire\Livewire;
 
 class DarkmodeToggleServiceProvider extends ServiceProvider
@@ -32,17 +33,21 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
 
     protected function registerViews(): void
     {
-        $css = config('darkmode.css_framework') ?? config('ui-kit.css_framework', 'tailwind');
-        $viewPath = __DIR__.'/../resources/views/'.$css.'/blade';
+        $base = __DIR__.'/../resources/views';
+        $css = DarkMode::cssFramework();
 
-        if (!is_dir($viewPath)) {
-            $viewPath = __DIR__.'/../resources/views/tailwind/blade';
+        if (!is_dir($base.'/'.$css)) {
+            $css = 'tailwind';
         }
 
-        $prefix = config('darkmode.prefix', 'darkmode');
-        $this->loadViewsFrom([$viewPath, __DIR__.'/../resources/views/'], $prefix);
+        $prefix = DarkMode::prefix();
 
-        $livewirePath = __DIR__.'/../resources/views/livewire';
+        // Blade views first, then anything else the framework ships such as its
+        // Livewire markup, then the views shared by every framework.
+        $this->loadViewsFrom([$base.'/'.$css.'/blade', $base.'/'.$css, $base], $prefix);
+
+        $livewirePath = $base.'/livewire';
+
         if (is_dir($livewirePath)) {
             $this->loadViewsFrom($livewirePath, $prefix.'-livewire');
         }
@@ -62,7 +67,7 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
 
     protected function registerComponents(): void
     {
-        Blade::component('darkmode-toggle', Toggle::class);
+        Blade::component(Toggle::class, 'darkmode-toggle');
 
         if (class_exists(Livewire::class)) {
             Livewire::component('darkmode-toggle', DarkmodeToggle::class);
@@ -82,18 +87,24 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
 
     protected function registerPublishing(): void
     {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/../../config/darkmode.php' => config_path('darkmode.php'),
-            ], 'darkmode-config');
-
-            $this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/darkmode'),
-            ], 'darkmode-views');
-
-            $this->publishes([
-                __DIR__.'/../../resources/lang' => $this->app->langPath('vendor/darkmode'),
-            ], 'darkmode-lang');
+        if (!$this->app->runningInConsole()) {
+            return;
         }
+
+        $this->publishes([
+            __DIR__.'/../../config/darkmode.php' => config_path('darkmode.php'),
+        ], 'darkmode-config');
+
+        $this->publishes([
+            __DIR__.'/../resources/views' => resource_path('views/vendor/darkmode'),
+        ], 'darkmode-views');
+
+        $this->publishes([
+            __DIR__.'/../../resources/lang' => $this->app->langPath('vendor/darkmode'),
+        ], 'darkmode-lang');
+
+        $this->publishes([
+            __DIR__.'/../resources/js' => resource_path('js/vendor/darkmode-toggle'),
+        ], 'darkmode-js');
     }
 }

@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Jeremykenedy\LaravelDarkmodeToggle\Tests;
 
+use Jeremykenedy\LaravelDarkmodeToggle\Components\Toggle;
 use Jeremykenedy\LaravelDarkmodeToggle\Providers\DarkmodeToggleServiceProvider;
+use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase
 {
     protected function getPackageProviders($app): array
     {
-        return [DarkmodeToggleServiceProvider::class];
+        return [
+            LivewireServiceProvider::class,
+            DarkmodeToggleServiceProvider::class,
+        ];
     }
 
     protected function getEnvironmentSetUp($app): void
@@ -41,6 +46,7 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('ui-kit.frontend', 'blade');
 
         $app['config']->set('app.env', 'testing');
+        $app['config']->set('app.key', 'base64:'.base64_encode('darkmode-toggle-testing-key-1234'));
     }
 
     protected function setUp(): void
@@ -48,6 +54,32 @@ abstract class TestCase extends OrchestraTestCase
         parent::setUp();
 
         $this->assertDatabaseIsSafe();
+    }
+
+    /**
+     * Point the view namespace at one CSS framework without rebooting the application.
+     */
+    protected function useCssFramework(string $css, array $config = []): void
+    {
+        config(array_merge(['ui-kit.css_framework' => $css], $config));
+
+        $base = realpath(__DIR__.'/../src/resources/views');
+
+        $this->app->make('view')->getFinder()->flush();
+        $this->app->make('view')->replaceNamespace('darkmode', [
+            $base.'/'.$css.'/blade',
+            $base.'/'.$css,
+            $base,
+        ]);
+    }
+
+    protected function renderToggleFor(string $css, array $config = []): string
+    {
+        $this->useCssFramework($css, $config);
+
+        $component = new Toggle();
+
+        return view('darkmode::toggle', $component->data())->render();
     }
 
     private function assertDatabaseIsSafe(): void
