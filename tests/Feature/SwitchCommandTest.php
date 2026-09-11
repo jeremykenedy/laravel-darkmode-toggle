@@ -1,7 +1,7 @@
 <?php
 
-use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 use Jeremykenedy\LaravelDarkmodeToggle\Console\Concerns\HandlesFrameworkSetup;
+use Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode;
 
 it('switches the css framework', function (string $css) {
     $this->artisan('darkmode:switch', ['--css' => $css])
