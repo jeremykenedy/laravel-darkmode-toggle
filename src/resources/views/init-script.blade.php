@@ -1,13 +1,21 @@
 {{-- Dark mode init script. Runs before paint to prevent a flash of the wrong theme. --}}
+@php
+    $darkmode = \Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode::class;
+    $storageKey = $darkmode::storageKey();
+    $className = $darkmode::className();
+    $dataAttribute = $darkmode::dataAttribute();
+    $colorScheme = (bool) config('darkmode.color_scheme', false);
+    $defaultMode = $darkmode::defaultMode();
+@endphp
 {{-- Include in <head> with @include('darkmode::init-script'). --}}
 <style>[x-cloak]{display:none !important}</style>
 <script>
 (function () {
-    var key = @json(config('darkmode.storage_key', 'theme'));
-    var cls = @json(config('darkmode.class_name', 'dark'));
-    var attr = @json(config('darkmode.data_attribute'));
-    var fallback = @json(config('darkmode.default', 'system'));
-    var colorScheme = @json((bool) config('darkmode.color_scheme', false));
+    var key = @json($storageKey);
+    var cls = @json($className);
+    var attr = @json($dataAttribute);
+    var fallback = @json($defaultMode);
+    var colorScheme = @json($colorScheme);
     var root = document.documentElement;
 
     function stored() {

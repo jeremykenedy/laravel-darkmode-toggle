@@ -1,13 +1,21 @@
 {{-- Shared Alpine behaviour for the Livewire toggle. The server owns the mode, Alpine only mirrors it onto the document. --}}
+@php
+    $darkmode = \Jeremykenedy\LaravelDarkmodeToggle\Support\DarkMode::class;
+    $storageKey = $darkmode::storageKey();
+    $className = $darkmode::className();
+    $dataAttribute = $darkmode::dataAttribute();
+    $colorScheme = (bool) config('darkmode.color_scheme', false);
+    $syncAcrossTabs = (bool) config('darkmode.sync_across_tabs', false);
+@endphp
 x-data="{
     open: false,
     mode: '{{ $current }}',
     init() {
         this.apply(this.mode);
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => this.apply(this.mode));
-        @if(config('darkmode.sync_across_tabs', false))
+        @if($syncAcrossTabs)
         window.addEventListener('storage', (event) => {
-            if (event.key === '{{ config('darkmode.storage_key', 'theme') }}' && event.newValue) {
+            if (event.key === '{{ $storageKey }}' && event.newValue) {
                 this.apply(event.newValue);
             }
         });
@@ -16,14 +24,14 @@ x-data="{
     apply(mode) {
         this.mode = mode;
         try {
-            localStorage.setItem('{{ config('darkmode.storage_key', 'theme') }}', mode);
+            localStorage.setItem('{{ $storageKey }}', mode);
         } catch (error) {}
         const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        document.documentElement.classList.toggle('{{ config('darkmode.class_name', 'dark') }}', isDark);
-        @if(config('darkmode.data_attribute'))
-        document.documentElement.setAttribute('{{ config('darkmode.data_attribute') }}', isDark ? 'dark' : 'light');
+        document.documentElement.classList.toggle('{{ $className }}', isDark);
+        @if($dataAttribute)
+        document.documentElement.setAttribute('{{ $dataAttribute }}', isDark ? 'dark' : 'light');
         @endif
-        @if(config('darkmode.color_scheme', false))
+        @if($colorScheme)
         document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
         @endif
     },

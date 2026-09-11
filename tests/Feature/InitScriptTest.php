@@ -61,3 +61,22 @@ it('mirrors the theme onto the color scheme property when switched on', function
     expect(initScript())->toContain('var colorScheme = true')
         ->and(initScript())->toContain('root.style.colorScheme');
 });
+
+it('normalises settings so it cannot emit an empty class token', function () {
+    config(['darkmode.class_name' => '']);
+
+    expect(initScript())->toContain('var cls = "dark"')
+        ->and(initScript())->not->toContain('var cls = ""');
+});
+
+it('normalises a default that is not a supported mode', function () {
+    config(['darkmode.default' => 'sepia']);
+
+    expect(initScript())->toContain('var fallback = "system"');
+});
+
+it('normalises an emptied storage key', function () {
+    config(['darkmode.storage_key' => '']);
+
+    expect(initScript())->toContain('var key = "theme"');
+});

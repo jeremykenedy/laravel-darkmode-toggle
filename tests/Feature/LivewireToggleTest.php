@@ -132,3 +132,13 @@ it('keeps other tabs in step when cross tab sync is switched on', function (stri
     expect($html)->toContain("window.addEventListener('storage'")
         ->and($html)->toContain("event.key === 'theme'");
 })->with(['tailwind', 'bootstrap5', 'bootstrap4']);
+
+it('normalises settings so it cannot emit an empty class token', function () {
+    config(['darkmode.class_name' => '', 'darkmode.storage_key' => '']);
+
+    $html = Livewire::test(DarkmodeToggle::class)->html();
+
+    expect($html)->toContain("classList.toggle('dark'")
+        ->and($html)->not->toContain("classList.toggle(''")
+        ->and($html)->toContain("localStorage.setItem('theme'");
+});

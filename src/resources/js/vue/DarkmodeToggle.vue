@@ -10,6 +10,7 @@ const props = defineProps({
     className: { type: String, default: 'dark' },
     dataAttribute: { type: String, default: '' },
     colorScheme: { type: Boolean, default: false },
+    syncAcrossTabs: { type: Boolean, default: false },
     toggleLabel: { type: String, default: 'Toggle theme' },
     labels: {
         type: Object,
@@ -96,6 +97,13 @@ function onSystemChange() {
     }
 }
 
+function onStorage(event) {
+    if (event.key === props.storageKey && event.newValue) {
+        current.value = event.newValue
+        apply(event.newValue)
+    }
+}
+
 function onDocumentClick(event) {
     if (root.value && !root.value.contains(event.target)) {
         open.value = false
@@ -109,11 +117,16 @@ onMounted(() => {
     query = window.matchMedia('(prefers-color-scheme: dark)')
     query.addEventListener('change', onSystemChange)
     document.addEventListener('click', onDocumentClick)
+
+    if (props.syncAcrossTabs) {
+        window.addEventListener('storage', onStorage)
+    }
 })
 
 onBeforeUnmount(() => {
     query?.removeEventListener('change', onSystemChange)
     document.removeEventListener('click', onDocumentClick)
+    window.removeEventListener('storage', onStorage)
 })
 </script>
 

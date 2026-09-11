@@ -257,6 +257,7 @@ no build configuration of their own.
 | `className` | `dark` | Class toggled on `<html>` |
 | `dataAttribute` | `''` | Attribute set on `<html>`, for example `data-bs-theme` |
 | `colorScheme` | `false` | Mirror the theme onto the CSS `color-scheme` property |
+| `syncAcrossTabs` | `false` | Follow theme changes made in another tab |
 | `toggleLabel` | `Toggle theme` | Accessible label for the trigger |
 | `labels` | `{ light, dark, system }` | Labels for the three options |
 

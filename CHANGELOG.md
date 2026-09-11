@@ -19,8 +19,8 @@ All notable changes to this package are documented here.
   existed.
 - `darkmode-js` publish tag. The Vue, React, and Svelte components now publish to
   `resources/js/vendor/darkmode-toggle`, which is the import path the README documents.
-- `dataAttribute`, `colorScheme`, `toggleLabel` and `labels` props on the Vue, React and Svelte
-  components, bringing them to parity with the Blade views.
+- `dataAttribute`, `colorScheme`, `syncAcrossTabs`, `toggleLabel` and `labels` props on the Vue,
+  React and Svelte components, bringing them to parity with the Blade views.
 - Keyboard support on the toggle: `Escape` closes and restores focus, `ArrowDown` and `ArrowUp`
   move between options.
 - ARIA menu button semantics: `aria-haspopup`, `aria-expanded`, `role="menu"`,
@@ -69,6 +69,10 @@ All notable changes to this package are documented here.
 - `sync_across_tabs` did nothing on the Livewire toggle. It only ever worked on the Blade views.
 - The React component checked storage rather than the selected mode when the operating system
   preference changed, so System stopped following the OS when a browser blocked storage.
+- The init script and the Livewire markup read raw config while the Blade component normalised
+  it. An empty `class_name` made both emit `classList.toggle('')`, which throws, and an invalid
+  `default` stopped the init script following the operating system. Both now resolve their
+  settings the same way the component does.
 
 ### Notes
 

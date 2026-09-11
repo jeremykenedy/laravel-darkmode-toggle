@@ -84,3 +84,11 @@ it('tracks the selected mode in the system change listener rather than re-readin
     expect($source)->toContain('currentRef.current')
         ->and($source)->toContain("if (currentRef.current === 'system')");
 });
+
+it('supports cross tab sync with cleanup', function (string $file) {
+    $source = componentSource($file);
+
+    expect($source)->toContain('syncAcrossTabs')
+        ->and($source)->toContain("addEventListener('storage'")
+        ->and($source)->toContain("removeEventListener('storage'");
+})->with('javascript components');

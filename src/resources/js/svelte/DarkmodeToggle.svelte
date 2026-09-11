@@ -9,6 +9,7 @@
     export let className = 'dark'
     export let dataAttribute = ''
     export let colorScheme = false
+    export let syncAcrossTabs = false
     export let toggleLabel = 'Toggle theme'
     export let labels = { light: 'Light', dark: 'Dark', system: 'System' }
 
@@ -106,16 +107,28 @@
         }
     }
 
+    function onStorage(event) {
+        if (event.key === storageKey && event.newValue) {
+            current = event.newValue
+            apply(event.newValue)
+        }
+    }
+
     onMount(() => {
         current = read() || defaultMode
         apply(current)
 
         query = window.matchMedia('(prefers-color-scheme: dark)')
         query.addEventListener('change', onSystemChange)
+
+        if (syncAcrossTabs) {
+            window.addEventListener('storage', onStorage)
+        }
     })
 
     onDestroy(() => {
         query?.removeEventListener('change', onSystemChange)
+        window.removeEventListener('storage', onStorage)
     })
 
     function clickOutside(node) {

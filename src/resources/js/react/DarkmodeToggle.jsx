@@ -21,6 +21,7 @@ export default function DarkmodeToggle({
     className = 'dark',
     dataAttribute = '',
     colorScheme = false,
+    syncAcrossTabs = false,
     toggleLabel = 'Toggle theme',
     labels = defaultLabels,
 }) {
@@ -63,15 +64,27 @@ export default function DarkmodeToggle({
                 setOpen(false)
             }
         }
+        const onStorage = (event) => {
+            if (event.key === storageKey && event.newValue) {
+                currentRef.current = event.newValue
+                setCurrent(event.newValue)
+                apply(event.newValue)
+            }
+        }
 
         query.addEventListener('change', onSystemChange)
         document.addEventListener('click', onDocumentClick)
 
+        if (syncAcrossTabs) {
+            window.addEventListener('storage', onStorage)
+        }
+
         return () => {
             query.removeEventListener('change', onSystemChange)
             document.removeEventListener('click', onDocumentClick)
+            window.removeEventListener('storage', onStorage)
         }
-    }, [apply, defaultMode, storageKey])
+    }, [apply, defaultMode, storageKey, syncAcrossTabs])
 
     function close() {
         setOpen(false)
