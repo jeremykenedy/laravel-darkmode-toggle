@@ -2,7 +2,11 @@
 
 All notable changes to this package are documented here.
 
-## Unreleased
+## v2.0.0 - 2026-09-11
+
+Backwards compatible. Every config key, class name, public property, Blade component alias, view
+name, publish tag and command signature is unchanged, and the three new config options ship
+switched off, so an application can upgrade without touching anything.
 
 ### Added
 
@@ -41,7 +45,7 @@ All notable changes to this package are documented here.
   `dark_mode` column.
 - The Livewire component falls back to `config('darkmode.default')` instead of a hardcoded
   `system`.
-- The test suite grew from 105 tests to 301, including a backwards compatibility contract that
+- The test suite grew from 105 tests to 355, including a backwards compatibility contract that
   pins the public API.
 
 ### Fixed
@@ -80,9 +84,6 @@ All notable changes to this package are documented here.
 
 ### Notes
 
-- Nothing in this release requires a change in a consuming application. Every existing config
-  key, class name, public property, Blade component alias, view name, publish tag, and command
-  signature is unchanged, and all three new config options default to off.
 - `composer.json` still allows Laravel 10 and 11, but Composer no longer installs either branch
   because every release is affected by CVE-2026-48019 with no patched version on those
   branches. CI covers Laravel 12 and 13.
