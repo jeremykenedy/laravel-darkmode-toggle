@@ -1,5 +1,5 @@
 <script>
-    import { onDestroy, onMount } from 'svelte'
+    import { onDestroy, onMount, tick } from 'svelte'
 
     export let defaultMode = 'system'
     export let storageKey = 'theme'
@@ -17,6 +17,8 @@
     let open = false
     let current = defaultMode
     let query = null
+    let trigger = null
+    let menu = null
 
     function read() {
         try {
@@ -50,7 +52,7 @@
         }
 
         apply(mode)
-        open = false
+        close()
 
         if (persistUrl) {
             fetch(persistUrl, {
@@ -63,6 +65,38 @@
                 },
                 body: JSON.stringify({ [persistField]: mode }),
             }).catch(() => {})
+        }
+    }
+
+    function close() {
+        open = false
+        trigger?.focus()
+    }
+
+    async function move(step) {
+        open = true
+
+        await tick()
+
+        const items = Array.from(menu?.querySelectorAll('[role=menuitemradio]') ?? [])
+        const from = items.indexOf(document.activeElement)
+        const next = from === -1 ? (step > 0 ? 0 : items.length - 1) : (from + step + items.length) % items.length
+        items[next]?.focus()
+    }
+
+    function onKeyDown(event) {
+        if (event.key === 'Escape') {
+            close()
+        }
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            move(1)
+        }
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault()
+            move(-1)
         }
     }
 
@@ -101,10 +135,9 @@
     }
 </script>
 
-<svelte:window on:keydown={event => event.key === 'Escape' && (open = false)} />
-
-<div class="relative" use:clickOutside>
+<div class="relative" use:clickOutside on:keydown={onKeyDown}>
     <button
+        bind:this={trigger}
         type="button"
         aria-expanded={open}
         aria-haspopup="true"
@@ -122,7 +155,7 @@
     </button>
 
     {#if open}
-        <div role="menu" class="absolute right-0 mt-1 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg z-50">
+        <div bind:this={menu} role="menu" class="absolute right-0 mt-1 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg z-50">
             {#each modes as mode}
                 <button
                     type="button"

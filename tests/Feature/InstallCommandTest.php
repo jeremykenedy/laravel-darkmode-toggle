@@ -107,3 +107,21 @@ it('tells the developer what to do next', function () {
         ->expectsOutputToContain('<x-darkmode-toggle />')
         ->assertSuccessful();
 });
+
+it('refuses an unsupported css framework even when only that flag is passed', function () {
+    $this->artisan('darkmode:install', [
+        '--css'            => 'material',
+        '--no-interaction' => true,
+    ])->expectsOutputToContain('Invalid CSS framework: material')->assertFailed();
+
+    expect(file_exists(config_path('darkmode.php')))->toBeFalse();
+});
+
+it('refuses an unsupported frontend even when only that flag is passed', function () {
+    $this->artisan('darkmode:install', [
+        '--frontend'       => 'angular',
+        '--no-interaction' => true,
+    ])->expectsOutputToContain('Invalid frontend: angular')->assertFailed();
+
+    expect(file_exists(config_path('darkmode.php')))->toBeFalse();
+});

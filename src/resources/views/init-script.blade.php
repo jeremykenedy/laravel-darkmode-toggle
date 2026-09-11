@@ -1,5 +1,5 @@
 {{-- Dark mode init script. Runs before paint to prevent a flash of the wrong theme. --}}
-{{-- Include in <head>, either with @darkmodeInit or @include('darkmode::init-script'). --}}
+{{-- Include in <head> with @include('darkmode::init-script'). --}}
 <style>[x-cloak]{display:none !important}</style>
 <script>
 (function () {

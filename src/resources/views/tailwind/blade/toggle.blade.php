@@ -1,5 +1,5 @@
 <div
-    @include('darkmode::partials.toggle-data')
+    @include(config('darkmode.prefix', 'darkmode').'::partials.toggle-data')
     {{ $attributes->merge(['class' => 'relative']) }}
 >
     <button

@@ -100,6 +100,14 @@ trait HasInstallPrompts
         }
 
         if ($this->option('no-interaction')) {
+            if ($css && !$this->validateCssFramework($css)) {
+                return false;
+            }
+
+            if ($frontend && !$this->validateFrontend($frontend)) {
+                return false;
+            }
+
             return [
                 'css'      => $css ?: DarkMode::cssFramework(),
                 'frontend' => $frontend ?: DarkMode::frontend(),

@@ -27,6 +27,8 @@ export default function DarkmodeToggle({
     const [open, setOpen] = useState(false)
     const [current, setCurrent] = useState(defaultMode)
     const root = useRef(null)
+    const trigger = useRef(null)
+    const menu = useRef(null)
 
     const apply = useCallback((mode) => {
         const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -69,6 +71,39 @@ export default function DarkmodeToggle({
         }
     }, [apply, defaultMode, storageKey])
 
+    function close() {
+        setOpen(false)
+        trigger.current?.focus()
+    }
+
+    function move(step) {
+        setOpen(true)
+
+        requestAnimationFrame(() => {
+            const items = Array.from(menu.current?.querySelectorAll('[role=menuitemradio]') ?? [])
+            const from = items.indexOf(document.activeElement)
+            const next = from === -1 ? (step > 0 ? 0 : items.length - 1) : (from + step + items.length) % items.length
+            items[next]?.focus()
+        })
+    }
+
+    function onKeyDown(event) {
+        if (event.key === 'Escape') {
+            event.stopPropagation()
+            close()
+        }
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            move(1)
+        }
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault()
+            move(-1)
+        }
+    }
+
     function setTheme(mode) {
         setCurrent(mode)
 
@@ -79,7 +114,7 @@ export default function DarkmodeToggle({
         }
 
         apply(mode)
-        setOpen(false)
+        close()
 
         if (persistUrl) {
             fetch(persistUrl, {
@@ -96,8 +131,9 @@ export default function DarkmodeToggle({
     }
 
     return (
-        <div className="relative" ref={root} onKeyDown={(event) => event.key === 'Escape' && setOpen(false)}>
+        <div className="relative" ref={root} onKeyDown={onKeyDown}>
             <button
+                ref={trigger}
                 type="button"
                 aria-expanded={open}
                 aria-haspopup="true"
@@ -111,7 +147,7 @@ export default function DarkmodeToggle({
             </button>
 
             {open && (
-                <div role="menu" className="absolute right-0 mt-1 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg z-50">
+                <div ref={menu} role="menu" className="absolute right-0 mt-1 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg z-50">
                     {modes.map((mode) => (
                         <button
                             key={mode}

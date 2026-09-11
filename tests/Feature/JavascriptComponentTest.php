@@ -64,3 +64,16 @@ it('sends the preference to the server when a url is given', function (string $f
     expect(componentSource($file))->toContain('X-CSRF-TOKEN')
         ->and(componentSource($file))->toContain("credentials: 'same-origin'");
 })->with('javascript components');
+
+it('supports the keyboard navigation the readme documents', function (string $file) {
+    $source = componentSource($file);
+
+    // Each framework spells the key its own way, for example arrow-down against ArrowDown.
+    $keys = str_replace('-', '', strtolower($source));
+
+    expect($keys)->toContain('arrowdown')
+        ->and($keys)->toContain('arrowup')
+        ->and($keys)->toContain('escape')
+        ->and($source)->toContain('menuitemradio')
+        ->and($source)->toContain('focus()');
+})->with('javascript components');

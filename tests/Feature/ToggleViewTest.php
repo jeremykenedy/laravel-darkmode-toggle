@@ -1,5 +1,6 @@
 <?php
 
+use Jeremykenedy\LaravelDarkmodeToggle\Components\Toggle;
 use Jeremykenedy\LaravelDarkmodeToggle\Tests\Fixtures\Profile;
 use Jeremykenedy\LaravelDarkmodeToggle\Tests\Fixtures\User;
 
@@ -163,3 +164,31 @@ it('merges attributes passed to the component onto the wrapper', function () {
         ->and($html)->toContain('data-testid="theme"')
         ->and($html)->toContain('relative');
 });
+
+it('renders through a custom view prefix', function (string $css) {
+    config(['darkmode.prefix' => 'theme']);
+
+    $base = realpath(__DIR__.'/../../src/resources/views');
+
+    $this->app->make('view')->getFinder()->flush();
+    $this->app->make('view')->replaceNamespace('theme', [$base.'/'.$css.'/blade', $base.'/'.$css, $base]);
+
+    $html = view('theme::toggle', (new Toggle())->data())->render();
+
+    expect($html)->toContain('x-data')
+        ->and($html)->toContain("set('light')");
+})->with('css frameworks');
+
+it('renders the livewire markup through a custom view prefix', function (string $css) {
+    config(['darkmode.prefix' => 'theme']);
+
+    $base = realpath(__DIR__.'/../../src/resources/views');
+
+    $this->app->make('view')->getFinder()->flush();
+    $this->app->make('view')->replaceNamespace('theme', [$base.'/'.$css.'/blade', $base.'/'.$css, $base]);
+
+    $html = view('theme::livewire.toggle', ['current' => 'dark'])->render();
+
+    expect($html)->toContain('x-data')
+        ->and($html)->toContain('setTheme');
+})->with('css frameworks');

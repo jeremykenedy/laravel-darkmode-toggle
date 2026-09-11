@@ -46,6 +46,8 @@ All notable changes to this package are documented here.
 
 ### Fixed
 
+- Keyboard navigation now works on every frontend. Vue, React, Svelte and Livewire handled
+  Escape only, so the arrow key and focus return behaviour was Blade specific.
 - The Vue component used a `v-click-outside` directive that was never defined, so it threw on
   mount unless the host application happened to register one. It now uses a plain document
   listener that is removed on unmount.
@@ -54,6 +56,8 @@ All notable changes to this package are documented here.
 - `.env` key matching in the install and switch commands is anchored to the start of a line. A
   key such as `APP_UI_KIT_CSS` could previously make the write silently do nothing.
 - The controller checks that the profile is an object before updating it.
+- `darkmode:install --css=material --no-interaction` wrote an unsupported framework instead of
+  failing. Passing a single flag skipped validation.
 
 ### Notes
 

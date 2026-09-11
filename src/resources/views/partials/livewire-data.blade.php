@@ -19,8 +19,20 @@ x-data="{
         @if(config('darkmode.color_scheme', false))
         document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
         @endif
+    },
+    close() {
+        this.open = false;
+        this.$refs.button.focus();
+    },
+    move(step) {
+        const items = Array.from(this.$refs.menu.querySelectorAll('[role=menuitemradio]'));
+        const from = items.indexOf(document.activeElement);
+        const next = from === -1 ? (step > 0 ? 0 : items.length - 1) : (from + step + items.length) % items.length;
+        items[next].focus();
     }
 }"
 x-id="['darkmode-menu']"
 @theme-changed.window="apply($event.detail.mode)"
-@keydown.escape.stop="open = false; $refs.button.focus()"
+@keydown.escape.stop="close()"
+@keydown.arrow-down.prevent="open = true; $nextTick(() => move(1))"
+@keydown.arrow-up.prevent="open = true; $nextTick(() => move(-1))"

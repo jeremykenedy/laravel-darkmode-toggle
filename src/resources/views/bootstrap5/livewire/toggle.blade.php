@@ -1,4 +1,4 @@
-<div @include('darkmode::partials.livewire-data') class="dropdown d-inline-block">
+<div @include(config('darkmode.prefix', 'darkmode').'::partials.livewire-data') class="dropdown d-inline-block">
     <button
         x-ref="button"
         @click="open = !open"
@@ -20,6 +20,7 @@
     </button>
 
     <div
+        x-ref="menu"
         x-show="open"
         x-cloak
         @click.outside="open = false"

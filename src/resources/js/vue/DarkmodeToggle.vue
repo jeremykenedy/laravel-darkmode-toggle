@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 
 const props = defineProps({
     defaultMode: { type: String, default: 'system' },
@@ -21,6 +21,8 @@ const modes = ['light', 'dark', 'system']
 const open = ref(false)
 const current = ref(props.defaultMode)
 const root = ref(null)
+const trigger = ref(null)
+const menu = ref(null)
 
 let query = null
 
@@ -56,7 +58,7 @@ function setTheme(mode) {
     }
 
     apply(mode)
-    open.value = false
+    close()
 
     if (props.persistUrl) {
         fetch(props.persistUrl, {
@@ -70,6 +72,22 @@ function setTheme(mode) {
             body: JSON.stringify({ [props.persistField]: mode }),
         }).catch(() => {})
     }
+}
+
+function close() {
+    open.value = false
+    trigger.value?.focus()
+}
+
+function move(step) {
+    open.value = true
+
+    nextTick(() => {
+        const items = Array.from(menu.value?.querySelectorAll('[role=menuitemradio]') ?? [])
+        const from = items.indexOf(document.activeElement)
+        const next = from === -1 ? (step > 0 ? 0 : items.length - 1) : (from + step + items.length) % items.length
+        items[next]?.focus()
+    })
 }
 
 function onSystemChange() {
@@ -100,8 +118,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="root" class="relative" @keydown.escape="open = false">
+    <div
+        ref="root"
+        class="relative"
+        @keydown.escape.stop="close"
+        @keydown.arrow-down.prevent="move(1)"
+        @keydown.arrow-up.prevent="move(-1)"
+    >
         <button
+            ref="trigger"
             type="button"
             :aria-expanded="open"
             aria-haspopup="true"
@@ -114,7 +139,7 @@ onBeforeUnmount(() => {
             <svg v-else class="h-5 w-5" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
         </button>
 
-        <div v-if="open" role="menu" class="absolute right-0 mt-1 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg z-50">
+        <div v-if="open" ref="menu" role="menu" class="absolute right-0 mt-1 w-36 rounded-lg bg-white dark:bg-gray-800 shadow-lg z-50">
             <button
                 v-for="mode in modes"
                 :key="mode"

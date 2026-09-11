@@ -31,6 +31,12 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
         $this->registerPublishing();
     }
 
+    /**
+     * Register the view namespace for the active CSS framework.
+     *
+     * Lookup order is the framework Blade views, then anything else that
+     * framework ships such as its Livewire markup, then the shared views.
+     */
     protected function registerViews(): void
     {
         $base = __DIR__.'/../resources/views';
@@ -42,8 +48,6 @@ class DarkmodeToggleServiceProvider extends ServiceProvider
 
         $prefix = DarkMode::prefix();
 
-        // Blade views first, then anything else the framework ships such as its
-        // Livewire markup, then the views shared by every framework.
         $this->loadViewsFrom([$base.'/'.$css.'/blade', $base.'/'.$css, $base], $prefix);
 
         $livewirePath = $base.'/livewire';
